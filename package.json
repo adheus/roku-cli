@@ -1,0 +1,39 @@
+{
+  "name": "roku-cli",
+  "version": "0.1.0",
+  "description": "Roku CLI Build tools",
+  "main": "dist/roku",
+  "typings": "dist/roku",
+  "repository": "https://github.com/adheus/roku-cli.git",
+  "author": "Adheus Rangel <adheusrangel@gmail.com>",
+  "license": "MIT",
+  "bin": {
+    "roku": "./dist/commands/roku.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "files": [
+    "dist",
+    "resources"
+  ],
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "roku-deploy": "^3.2.3",
+    "telnet-client": "^1.4.6",
+    "yargs": "^16.2.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.10",
+    "@babel/preset-env": "^7.12.10",
+    "@babel/preset-typescript": "^7.12.7",
+    "@types/fs-extra": "^9.0.4",
+    "@types/jest": "^26.0.19",
+    "@types/node": "^14.14.12",
+    "@types/request": "^2.48.5",
+    "babel-jest": "^26.6.3",
+    "jest": "^26.6.3",
+    "typescript": "^4.1.2"
+  }
+}
