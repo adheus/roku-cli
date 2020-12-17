@@ -1,7 +1,6 @@
 import path from 'path';
 import fs from 'fs';
 import { rekeyDevice, deployAndSignPackage, deleteInstalledChannel } from 'roku-deploy';
-
 import { generateKey } from '../roku/roku-genkey';
 
 type DeviceProperties = { device?: string, password?: string, username?: string }
@@ -9,7 +8,7 @@ type DeviceProperties = { device?: string, password?: string, username?: string 
 const CREDENTIALS_FILENAME = 'credentials.json'
 const PACKAGE_EXTENSION = '.pkg'
 
-const RESOURCE_FOLDER_PATH = '../resources'
+const RESOURCE_FOLDER_DIRECTORY = 'resources'
 const SIGNING_PROJECT_PATH = 'signing-project'
 
 const DEFAULT_OUTPUT_DIRECTORY = 'out'
@@ -22,12 +21,18 @@ export async function signPackage(projectPath: string, signingPath: string, outp
     // Rekey device to application signing properties [AR]
     const signingProperties = parseSigningProperties(signingPath)
 
+    const signedPackagePath = path.resolve(signingProperties.packageFilePath)
+    console.log(signedPackagePath)
+    
     await rekeyDevice({
         ...finalDeviceProperties,
         signingPassword: signingProperties.credentials.password,
-        rekeySignedPackage: path.resolve(signingProperties.packageFilePath),
+        rekeySignedPackage: signedPackagePath,
         devId: signingProperties.credentials.dev_id
     })
+
+    // Wait a little bit before starting to sign package [AR]
+    await sleep(3000)
 
     // Generate new package [AR]
     const generatedPackagePath = await deployAndSignPackage({
@@ -82,6 +87,9 @@ export async function createSigningCredentials(packageName: string, outputPath: 
     fs.copyFileSync(packagePath, outputPackagePath)
     fs.writeFileSync(outputCredentialsPath, JSON.stringify(signingProperties))
 
+    // Clear ./out directory [AR]
+    cleanOutDirectory()
+
     return outputPath
 }
 
@@ -124,8 +132,7 @@ function parseSigningProperties(signingPropertiesPath: string) {
 }
 
 function getResourceAt(resourcePath: string) {
-    const packagePath = '${__dirname}'
-    const resourcesFolderPath = path.join(packagePath, RESOURCE_FOLDER_PATH)
+    const resourcesFolderPath = path.resolve(path.join(__dirname, '..', '..', RESOURCE_FOLDER_DIRECTORY))
     return path.resolve(path.join(resourcesFolderPath, resourcePath))
 }
 
@@ -143,5 +150,9 @@ function getDeviceProperties(device: string | undefined = undefined, password: s
 }
 
 function cleanOutDirectory() {
-    fs.rmSync(path.resolve(DEFAULT_OUTPUT_DIRECTORY), { recursive: true })
+    fs.rmSync(DEFAULT_OUTPUT_DIRECTORY, { recursive: true, force:true })
+}
+
+function sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }

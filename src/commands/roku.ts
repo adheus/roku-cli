@@ -41,6 +41,7 @@ const argv = require('yargs/yargs')(process.argv.slice(2))
                 logSuccess(`Package signed and stored at: ${outputPath}`)
             } catch (error) {
                 logError(error.message)
+                process.exit(1)
             }
         })
     .command(
@@ -59,8 +60,8 @@ const argv = require('yargs/yargs')(process.argv.slice(2))
                 await executeDeviceRekey(argv.signing, argv)
                 logSuccess('Device rekey applied.')
             } catch (error) {
-                console.log(error);
                 logError(error.message)
+                process.exit(1)
             }
         })
     .command(
@@ -86,6 +87,7 @@ const argv = require('yargs/yargs')(process.argv.slice(2))
                 logSuccess(`Signing credentials generated and stored at: ${outputPath}`)
             } catch (error) {
                 logError(error.message)
+                process.exit(1)
             }
         })
     .options({

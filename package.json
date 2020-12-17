@@ -12,7 +12,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "jest"
+    "test": "jest --runInBand --coverage"
   },
   "files": [
     "dist",

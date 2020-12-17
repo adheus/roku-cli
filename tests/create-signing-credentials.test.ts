@@ -8,11 +8,13 @@ const testDeviceProperties = {
     username: 'rokudev',
     password: '4551'
 }
+// Remove results directory before running tests
+beforeAll(() => fs.rmSync('tests/out', { recursive: true, force:true }));
 
 describe('create signing credentials tests', () => {
     test('create signing credentials with no device properties should fail', async () => {
         try {
-            await createSigningCredentials('test_app', './out/tests/signing')
+            await createSigningCredentials('test_app', 'tests/out/signing')
             fail('create credentials should have failed')
         } catch (error) {
             expect(error.message).toEqual('The following device properties should be set: device, password')
@@ -22,7 +24,7 @@ describe('create signing credentials tests', () => {
     test('create signing credentials should succeed', async () => {
         try {
             const appName = 'test_app'
-            const credentialsPath = await createSigningCredentials(appName, './out/tests/signing', testDeviceProperties)
+            const credentialsPath = await createSigningCredentials(appName, 'tests/out/signing', testDeviceProperties)
             expect(fs.existsSync(credentialsPath)).toEqual(true)
             expect(fs.existsSync(path.join(credentialsPath, `${appName}.pkg`))).toEqual(true)
             expect(fs.existsSync(path.join(credentialsPath, 'credentials.json'))).toEqual(true)
