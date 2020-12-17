@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import { rekeyDevice, deployAndSignPackage, deleteInstalledChannel } from 'roku-deploy';
+import { pressHomeButton, rekeyDevice, deployAndSignPackage, deleteInstalledChannel, deploy } from 'roku-deploy';
 import { generateKey } from '../roku/roku-genkey';
 
 type DeviceProperties = { device?: string, password?: string, username?: string }
@@ -15,24 +15,22 @@ const DEFAULT_OUTPUT_DIRECTORY = 'out'
 
 export async function signPackage(projectPath: string, signingPath: string, outputPath: string, packageName: string, deviceProperties?: DeviceProperties) {
     const finalDeviceProperties = getDeviceProperties(deviceProperties?.device, deviceProperties?.password, deviceProperties?.username)
+    
+    // Go to Home
+    await pressHomeButton(finalDeviceProperties.host);
+
     // Clear current installed channel [AR]
-    deleteInstalledChannel({ ...finalDeviceProperties })
+    await deleteInstalledChannel({ ...finalDeviceProperties });
 
     // Rekey device to application signing properties [AR]
-    const signingProperties = parseSigningProperties(signingPath)
-
-    const signedPackagePath = path.resolve(signingProperties.packageFilePath)
-    console.log(signedPackagePath)
-    
+    const signingProperties = parseSigningProperties(signingPath);
+    const signedPackagePath = path.resolve(signingProperties.packageFilePath);
     await rekeyDevice({
         ...finalDeviceProperties,
         signingPassword: signingProperties.credentials.password,
         rekeySignedPackage: signedPackagePath,
         devId: signingProperties.credentials.dev_id
-    })
-
-    // Wait a little bit before starting to sign package [AR]
-    await sleep(3000)
+    });
 
     // Generate new package [AR]
     const generatedPackagePath = await deployAndSignPackage({
@@ -45,17 +43,18 @@ export async function signPackage(projectPath: string, signingPath: string, outp
 
     // Create output path directory if it doesn't exist [AR]
     if (!fs.existsSync(outputPath)) {
-        fs.mkdirSync(outputPath, { recursive: true })
+        fs.mkdirSync(outputPath, { recursive: true });
     }
+
     // Copy generated package to output path [AR]
     const packageOutputPath = path.join(outputPath, `${packageName}${PACKAGE_EXTENSION}`);
-    fs.copyFileSync(generatedPackagePath, packageOutputPath)
+    fs.copyFileSync(generatedPackagePath, packageOutputPath);
 
 
     // Clear ./out directory [AR]
-    cleanOutDirectory()
+    cleanOutDirectory();
 
-    return packageOutputPath
+    return packageOutputPath;
 }
 
 
@@ -63,12 +62,15 @@ export async function createSigningCredentials(packageName: string, outputPath: 
 
     const finalDeviceProperties = getDeviceProperties(deviceProperties?.device, deviceProperties?.password, deviceProperties?.username)
 
+    // Go to Home
+    await pressHomeButton(finalDeviceProperties.host);
+
     // Clear current installed channel [AR]
-    deleteInstalledChannel({ ...finalDeviceProperties })
+    await deleteInstalledChannel({ ...finalDeviceProperties });
 
-    const signingProperties = await generateKey(finalDeviceProperties.host)
+    const signingProperties = await generateKey(finalDeviceProperties.host);
 
-    const signingProjectPath = getResourceAt(SIGNING_PROJECT_PATH)
+    const signingProjectPath = getResourceAt(SIGNING_PROJECT_PATH);
 
     const packagePath = await deployAndSignPackage({
         ...finalDeviceProperties,
@@ -77,32 +79,40 @@ export async function createSigningCredentials(packageName: string, outputPath: 
         devId: signingProperties.dev_id
     });
 
-    const outputSigningPath = path.join(outputPath)
-    const outputPackagePath = path.join(outputSigningPath, `${packageName}${PACKAGE_EXTENSION}`)
-    const outputCredentialsPath = path.join(outputSigningPath, CREDENTIALS_FILENAME)
+    const outputSigningPath = path.join(outputPath);
+    const outputPackagePath = path.join(outputSigningPath, `${packageName}${PACKAGE_EXTENSION}`);
+    const outputCredentialsPath = path.join(outputSigningPath, CREDENTIALS_FILENAME);
 
     if (!fs.existsSync(outputSigningPath)) {
-        fs.mkdirSync(outputSigningPath, { recursive: true })
+        fs.mkdirSync(outputSigningPath, { recursive: true });
     }
-    fs.copyFileSync(packagePath, outputPackagePath)
-    fs.writeFileSync(outputCredentialsPath, JSON.stringify(signingProperties))
+    fs.copyFileSync(packagePath, outputPackagePath);
+    fs.writeFileSync(outputCredentialsPath, JSON.stringify(signingProperties));
 
     // Clear ./out directory [AR]
-    cleanOutDirectory()
+    cleanOutDirectory();
 
-    return outputPath
+    return outputPath;
 }
 
 export async function executeDeviceRekey(signingPath: string, deviceProperties?: DeviceProperties) {
+    
+    const signingProperties = parseSigningProperties(signingPath);
+    const finalDeviceProperties = getDeviceProperties(deviceProperties?.device, deviceProperties?.password, deviceProperties?.username)
 
-    const signingProperties = parseSigningProperties(signingPath)
+    // Go to Home
+    await pressHomeButton(finalDeviceProperties.host);
+    
+    // Clear current installed channel [AR]
+    await deleteInstalledChannel({ ...finalDeviceProperties });
 
+    // Start rekey [AR]
     await rekeyDevice({
-        ...getDeviceProperties(deviceProperties?.device, deviceProperties?.password, deviceProperties?.username),
+        ...finalDeviceProperties,
         signingPassword: signingProperties.credentials.password,
         rekeySignedPackage: path.resolve(signingProperties.packageFilePath),
         devId: signingProperties.credentials.dev_id
-    })
+    });
 }
 
 function parseSigningProperties(signingPropertiesPath: string) {
@@ -151,8 +161,4 @@ function getDeviceProperties(device: string | undefined = undefined, password: s
 
 function cleanOutDirectory() {
     fs.rmSync(DEFAULT_OUTPUT_DIRECTORY, { recursive: true, force:true })
-}
-
-function sleep(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
 }
