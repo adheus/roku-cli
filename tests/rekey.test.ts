@@ -1,5 +1,3 @@
-
-
 import { executeDeviceRekey } from '../src/roku/roku-api';
 
 const testDeviceProperties = {

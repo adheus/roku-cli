@@ -1,6 +1,5 @@
 import Telnet from 'telnet-client';
 
-
 export async function generateKey(deviceAddress: string) {
     let connection = new Telnet();
     let params = {
