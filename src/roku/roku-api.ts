@@ -47,7 +47,7 @@ export async function signPackage(projectPath: string, signingPath: string, outp
     fs.copyFileSync(generatedPackagePath, packageOutputPath)
 
 
-    // Clear ./out directory
+    // Clear ./out directory [AR]
     cleanOutDirectory()
 
     return packageOutputPath
@@ -116,7 +116,6 @@ function parseSigningProperties(signingPropertiesPath: string) {
         if (credentials.dev_id && credentials.password) {
             return { credentials, packageFilePath }
         } else {
-
             throw Error(`Missing required keys on credentials.json: dev_id, password`)
         }
     } catch (error) {
