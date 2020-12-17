@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
-import { createSigningCredentials,executeDeviceRekey, signPackage } from '../roku/roku-api';
+import { createSigningCredentials, executeDeviceRekey, signPackage } from '../roku/roku-api';
 import { logSuccess, logInfo, logError } from '../utils/pretty-log';
 
 const argv = require('yargs/yargs')(process.argv.slice(2))
     .command(
         'sign',
         'sign a roku package',
-        {   
+        {
             name: {
                 alias: 'n',
                 describe: 'application package name (without .pkg)',
@@ -35,7 +35,7 @@ const argv = require('yargs/yargs')(process.argv.slice(2))
                 normalize: true,
                 type: 'string'
             }
-        }, async (argv: { name:string, path:string, signing:string, output:string, device?:string, password?:string, username:string }) => {
+        }, async (argv: { name: string, path: string, signing: string, output: string, device?: string, password?: string, username: string }) => {
             try {
                 const outputPath = await signPackage(argv.path, argv.signing, argv.output, argv.name, argv)
                 logSuccess(`Package signed and stored at: ${outputPath}`)
@@ -54,11 +54,11 @@ const argv = require('yargs/yargs')(process.argv.slice(2))
                 normalize: true,
                 type: 'string'
             }
-        }, async (argv: { signing:string, device?:string, password?:string, username:string }) => {
+        }, async (argv: { signing: string, device?: string, password?: string, username: string }) => {
             try {
                 await executeDeviceRekey(argv.signing, argv)
                 logSuccess('Device rekey applied.')
-            } catch(error) {
+            } catch (error) {
                 console.log(error);
                 logError(error.message)
             }
@@ -80,11 +80,11 @@ const argv = require('yargs/yargs')(process.argv.slice(2))
                 normalize: true,
                 type: 'string'
             }
-        }, async (argv: { name:string, output:string, device?:string, password?:string, username:string }) => {
+        }, async (argv: { name: string, output: string, device?: string, password?: string, username: string }) => {
             try {
                 const outputPath = await createSigningCredentials(argv.name, argv.output, argv)
                 logSuccess(`Signing credentials generated and stored at: ${outputPath}`)
-            } catch(error) {
+            } catch (error) {
                 logError(error.message)
             }
         })

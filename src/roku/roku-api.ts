@@ -4,7 +4,7 @@ import { rekeyDevice, deployAndSignPackage, deleteInstalledChannel } from 'roku-
 
 import { generateKey } from '../roku/roku-genkey';
 
-type DeviceProperties = { device?:string, password?:string , username?:string}
+type DeviceProperties = { device?: string, password?: string, username?: string }
 
 const CREDENTIALS_FILENAME = 'credentials.json'
 const PACKAGE_EXTENSION = '.pkg'
@@ -14,10 +14,10 @@ const SIGNING_PROJECT_PATH = 'signing-project'
 
 const DEFAULT_OUTPUT_DIRECTORY = 'out'
 
-export async function signPackage(projectPath: string, signingPath: string, outputPath: string, packageName:string, deviceProperties?:DeviceProperties) {
+export async function signPackage(projectPath: string, signingPath: string, outputPath: string, packageName: string, deviceProperties?: DeviceProperties) {
     const finalDeviceProperties = getDeviceProperties(deviceProperties?.device, deviceProperties?.password, deviceProperties?.username)
     // Clear current installed channel [AR]
-    deleteInstalledChannel({...finalDeviceProperties})
+    deleteInstalledChannel({ ...finalDeviceProperties })
 
     // Rekey device to application signing properties [AR]
     const signingProperties = parseSigningProperties(signingPath)
@@ -54,12 +54,12 @@ export async function signPackage(projectPath: string, signingPath: string, outp
 }
 
 
-export async function createSigningCredentials(packageName: string, outputPath: string, deviceProperties?:DeviceProperties) {
-    
+export async function createSigningCredentials(packageName: string, outputPath: string, deviceProperties?: DeviceProperties) {
+
     const finalDeviceProperties = getDeviceProperties(deviceProperties?.device, deviceProperties?.password, deviceProperties?.username)
 
-     // Clear current installed channel [AR]
-     deleteInstalledChannel({...finalDeviceProperties})
+    // Clear current installed channel [AR]
+    deleteInstalledChannel({ ...finalDeviceProperties })
 
     const signingProperties = await generateKey(finalDeviceProperties.host)
 
@@ -86,7 +86,7 @@ export async function createSigningCredentials(packageName: string, outputPath: 
 }
 
 export async function executeDeviceRekey(signingPath: string, deviceProperties?: DeviceProperties) {
-    
+
     const signingProperties = parseSigningProperties(signingPath)
 
     await rekeyDevice({
@@ -137,7 +137,7 @@ function getDeviceProperties(device: string | undefined = undefined, password: s
     const finalPassword = password ? password : env.ROKU_DEVICE_PASSWORD
 
     if (finalHost && finalUsername && finalPassword) {
-        return { host:finalHost, username:finalUsername, password:finalPassword }
+        return { host: finalHost, username: finalUsername, password: finalPassword }
     } else {
         throw Error(`The following device properties should be set: device, password`)
     }
