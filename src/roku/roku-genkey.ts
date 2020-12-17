@@ -13,7 +13,7 @@ export async function generateKey(deviceAddress: string) {
     try {
         await connection.connect(params);
         const response = await connection.exec('genkey');
-        await connection.destroy();
+        await connection.end();
 
         const password = extractVariable("Password", response);
         const dev_id = extractVariable("DevID", response);
@@ -25,6 +25,7 @@ export async function generateKey(deviceAddress: string) {
         }
 
     } catch (error) {
+        await connection.destroy();
         throw Error(`Could not generate key: Failed to connect to Roku device[${deviceAddress}].`)
     }
 }
