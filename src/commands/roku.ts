@@ -1,12 +1,33 @@
 #!/usr/bin/env node
 
-import { createSigningCredentials, executeDeviceRekey, signPackage } from '../roku/roku-api';
+import { createSigningCredentials, deployProject, executeDeviceRekey, signPackage } from '../roku/roku-api';
 import { logSuccess, logInfo, logError } from '../utils/pretty-log';
 
 const argv = require('yargs/yargs')(process.argv.slice(2))
     .command(
+        'deploy',
+        'deploys a roku package',
+        {
+            path: {
+                alias: 'p',
+                demandOption: true,
+                describe: 'path to roku project',
+                normalize: true,
+                type: 'string'
+            },
+        },
+        async (argv: { path: string, device?: string, password?: string, username: string }) => {
+            try {
+                const outputPath = await deployProject(argv.path, argv)
+                logSuccess(`Application was successfully deployed`)
+            } catch (error) {
+                logError(error.message)
+                process.exit(1)
+            }
+        })
+    .command(
         'sign',
-        'sign a roku package',
+        'signs a roku package',
         {
             name: {
                 alias: 'n',
@@ -46,7 +67,7 @@ const argv = require('yargs/yargs')(process.argv.slice(2))
         })
     .command(
         'rekey',
-        'rekey roku device',
+        'rekeys roku device',
         {
             signing: {
                 alias: 's',
