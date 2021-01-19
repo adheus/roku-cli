@@ -1,6 +1,11 @@
 # roku-cli
 A CLI tool for signing Roku packages
 
+#### Installation
+```
+# npm install -g roku-cli
+```
+
 #### Supported commands are:
 
 ### roku deploy
