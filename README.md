@@ -3,34 +3,41 @@ A CLI tool for signing Roku packages
 
 #### Installation
 ```
-# npm install -g roku-cli
+$ npm install -g roku-cli
 ```
 
 #### Supported commands are:
-
-### roku deploy
+```
+$ roku deploy
+```
 Deploy the given project to the Roku device
 #### Arguments:
 - `-p` or `--path` - path to the roku project
 
-### roku sign
+```
+$ roku sign
+```
 Deploys, rekey the device (if needed) with the given signing credentials file and signs the package.
 #### Arguments:
 - `-n` or `--name` - application package name (without .pkg). defaults to 'app'
 - `-p` or `--path` - path to the roku project
 - `-s` or `--signing` - path to signing properties folder. This folder must be a folder containing the previous .pkg file and a signing credentials file.
-- `-o` or `--output` - path to where the package should be saved. defaults to current working directory
+- `-o` or `--output` - path to where the package should be saved. defaults to current working directory. defaults to working directory.
 
-### roku rekey
+```
+$ roku rekey
+```
 Rekeys a given Roku device by reading the dev_id and password in the given signing properties file.
 #### Arguments:
 - `-s` or `--signing` - path to signing properties folder. This folder must be a folder containing the previous .pkg file and a signing credentials file.
 
-### roku create-signing-credentials
+```
+$ roku create-signing-credentials
+```
 Creates a signing credentials file and a dummy package to be used for future package signing.
 #### Arguments:
 - `-n` or `--name` - output package filename
-- `-o` or `--output` - path to where signing properties should be saved
+- `-o` or `--output` - path to where signing properties should be saved. defaults to working directory.
 
 
 ### What is a signing credentials file?
