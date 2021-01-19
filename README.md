@@ -5,12 +5,12 @@ A CLI tool for signing Roku packages
 
 ### roku deploy
 Deploy the given project to the Roku device
-#### Required arguments:
+#### Arguments:
 - `-p` or `--path` - path to the roku project
 
 ### roku sign
 Deploys, rekey the device(if needed) with the given signing credentials file and signs the package.
-#### Required arguments:
+#### Arguments:
 - `-n` or `--name` - application package name (without .pkg). defaults to 'app'
 - `-p` or `--path` - path to the roku project
 - `-s` or `--signing` - path to signing properties folder. This folder must be a folder containing the previous .pkg file and a signing credentials file.
@@ -18,12 +18,12 @@ Deploys, rekey the device(if needed) with the given signing credentials file and
 
 ### roku rekey
 Rekeys a given Roku device by reading the dev_id and password in the given signing properties file.
-#### Required arguments:
+#### Arguments:
 - `-s` or `--signing` - path to signing properties folder. This folder must be a folder containing the previous .pkg file and a signing credentials file.
 
 ### roku create-signing-credentials
 Creates a signing credentials file and a dummy package to be used for future package signing.
-#### Required arguments:
+#### Arguments:
 - `-n` or `--name` - output package filename'
 - `-o` or `--output` - path to where signing properties should be saved
 
@@ -46,5 +46,5 @@ It is a simple way to store and reuse the signing properties required by Roku pa
 - `-u` or `--user` - sets the user of the Roku device. defaults to `rokudev`
 - `-w` or `--password` - sets the password of the Roku device
 
-Also, device properties can also be passed by setting the following environment variables:
+Also, device properties can be passed by setting the following environment variables:
 `ROKU_DEVICE_ADDRESS`, `ROKU_DEVICE_USERNAME` and `ROKU_DEVICE_PASSWORD`
