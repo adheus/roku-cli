@@ -13,6 +13,24 @@ const SIGNING_PROJECT_PATH = 'signing-project'
 
 const DEFAULT_OUTPUT_DIRECTORY = 'out'
 
+export async function deployProject(projectPath: string, deviceProperties?: DeviceProperties) {
+    const finalDeviceProperties = getDeviceProperties(deviceProperties?.device, deviceProperties?.password, deviceProperties?.username)
+    
+    // Go to Home
+    await pressHomeButton(finalDeviceProperties.host);
+
+    // Deploy project to device [AR]
+    await deploy({
+        ...finalDeviceProperties,
+        project: `${projectPath}/bsconfig.json`,
+        rootDir: projectPath
+    });
+
+    // Clear ./out directory [AR]
+    cleanOutDirectory();
+}
+
+
 export async function signPackage(projectPath: string, signingPath: string, outputPath: string, packageName: string, deviceProperties?: DeviceProperties) {
     const finalDeviceProperties = getDeviceProperties(deviceProperties?.device, deviceProperties?.password, deviceProperties?.username)
     

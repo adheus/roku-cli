@@ -1,13 +1,7 @@
 import fs from 'fs';
-import path from 'path';
 
+import { testDeviceProperties } from "../tests/test-device";
 import { signPackage } from '../src/roku/roku-api';
-
-const testDeviceProperties = {
-    device: '192.168.0.6',
-    username: 'rokudev',
-    password: '4551'
-}
 
 // Remove results directory before running tests
 beforeAll(() => fs.rmSync('tests/out', { recursive: true, force:true }));

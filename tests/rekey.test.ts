@@ -1,10 +1,5 @@
+import { testDeviceProperties } from "../tests/test-device";
 import { executeDeviceRekey } from '../src/roku/roku-api';
-
-const testDeviceProperties = {
-    device: '192.168.0.6',
-    username: 'rokudev',
-    password: '4551'
-}
 
 describe('rekey device tests', () => {
     test('rekey should fail with no device specified', async () => {
