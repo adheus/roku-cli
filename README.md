@@ -9,7 +9,7 @@ Deploy the given project to the Roku device
 - `-p` or `--path` - path to the roku project
 
 ### roku sign
-Deploys, rekey the device(if needed) with the given signing credentials file and signs the package.
+Deploys, rekey the device (if needed) with the given signing credentials file and signs the package.
 #### Arguments:
 - `-n` or `--name` - application package name (without .pkg). defaults to 'app'
 - `-p` or `--path` - path to the roku project
@@ -24,7 +24,7 @@ Rekeys a given Roku device by reading the dev_id and password in the given signi
 ### roku create-signing-credentials
 Creates a signing credentials file and a dummy package to be used for future package signing.
 #### Arguments:
-- `-n` or `--name` - output package filename'
+- `-n` or `--name` - output package filename
 - `-o` or `--output` - path to where signing properties should be saved
 
 
