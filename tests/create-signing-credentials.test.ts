@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import { testDeviceProperties } from "../tests/test-device";
+import { testDeviceProperties } from "./test-device";
 import { createSigningCredentials } from '../src/roku/roku-api';
 
 

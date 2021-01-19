@@ -1,4 +1,4 @@
-import { testDeviceProperties } from "../tests/test-device";
+import { testDeviceProperties } from "./test-device";
 import { executeDeviceRekey } from '../src/roku/roku-api';
 
 describe('rekey device tests', () => {

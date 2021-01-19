@@ -15,8 +15,7 @@ const argv = require('yargs/yargs')(process.argv.slice(2))
                 normalize: true,
                 type: 'string'
             },
-        },
-        async (argv: { path: string, device?: string, password?: string, username: string }) => {
+        }, async (argv: { path: string, device?: string, password?: string, username: string }) => {
             try {
                 const outputPath = await deployProject(argv.path, argv)
                 logSuccess(`Application was successfully deployed`)

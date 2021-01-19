@@ -1,4 +1,4 @@
-import { testDeviceProperties } from "../tests/test-device";
+import { testDeviceProperties } from "./test-device";
 import { deployProject } from "../src/roku/roku-api";
 
 describe('deploy project tests', () => {

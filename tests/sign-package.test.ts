@@ -1,6 +1,6 @@
 import fs from 'fs';
 
-import { testDeviceProperties } from "../tests/test-device";
+import { testDeviceProperties } from "./test-device";
 import { signPackage } from '../src/roku/roku-api';
 
 // Remove results directory before running tests
