@@ -2,6 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import { pressHomeButton, rekeyDevice, deployAndSignPackage, deleteInstalledChannel, deploy } from 'roku-deploy';
 import { generateKey } from '../roku/roku-genkey';
+import { sleep } from '../utils/async-utils';
 
 type DeviceProperties = { device?: string, password?: string, username?: string }
 
@@ -13,6 +14,8 @@ const SIGNING_PROJECT_PATH = 'signing-project'
 
 const DEFAULT_OUTPUT_DIRECTORY = 'out'
 
+const DEFAULT_WAIT_FOR_DEVICE_INTERVAL = 4000
+
 export async function deployProject(projectPath: string, deviceProperties?: DeviceProperties) {
     const finalDeviceProperties = getDeviceProperties(deviceProperties?.device, deviceProperties?.password, deviceProperties?.username)
 
@@ -21,7 +24,7 @@ export async function deployProject(projectPath: string, deviceProperties?: Devi
 
     // Go to Home
     await pressHomeButton(finalDeviceProperties.host);
-    await sleep();
+    await waitForDeviceToBeReady();
 
     // Deploy project to device [AR]
     await deploy({
@@ -30,7 +33,7 @@ export async function deployProject(projectPath: string, deviceProperties?: Devi
         rootDir: projectPath
     });
     
-    await sleep();
+    await waitForDeviceToBeReady();
 
     // Clear ./out directory [AR]
     cleanOutDirectory();
@@ -45,11 +48,11 @@ export async function signPackage(projectPath: string, signingPath: string, outp
 
     // Go to Home
     await pressHomeButton(finalDeviceProperties.host);
-    await sleep();
+    await waitForDeviceToBeReady();
 
     // Clear current installed channel [AR]
     await deleteInstalledChannel({ ...finalDeviceProperties });
-    await sleep();
+    await waitForDeviceToBeReady();
 
     // Rekey device to application signing properties [AR]
     const signingProperties = parseSigningProperties(signingPath);
@@ -60,7 +63,7 @@ export async function signPackage(projectPath: string, signingPath: string, outp
         rekeySignedPackage: signedPackagePath,
         devId: signingProperties.credentials.dev_id
     });
-    await sleep();
+    await waitForDeviceToBeReady();
 
     // Generate new package [AR]
     const generatedPackagePath = await deployAndSignPackage({
@@ -70,7 +73,7 @@ export async function signPackage(projectPath: string, signingPath: string, outp
         signingPassword: signingProperties.credentials.password,
         devId: signingProperties.credentials.dev_id
     });
-    await sleep();
+    await waitForDeviceToBeReady();
 
     // Create output path directory if it doesn't exist [AR]
     if (!fs.existsSync(outputPath)) {
@@ -95,14 +98,14 @@ export async function createSigningCredentials(packageName: string, outputPath: 
 
     // Go to Home
     await pressHomeButton(finalDeviceProperties.host);
-    await sleep();
+    await waitForDeviceToBeReady();
 
     // Clear current installed channel [AR]
     await deleteInstalledChannel({ ...finalDeviceProperties });
-    await sleep();
+    await waitForDeviceToBeReady();
 
     const signingProperties = await generateKey(finalDeviceProperties.host);
-    await sleep();
+    await waitForDeviceToBeReady();
 
     const signingProjectPath = getResourceAt(SIGNING_PROJECT_PATH);
 
@@ -115,7 +118,7 @@ export async function createSigningCredentials(packageName: string, outputPath: 
         signingPassword: signingProperties.password,
         devId: signingProperties.dev_id
     });
-    await sleep();
+    await waitForDeviceToBeReady();
 
     const outputSigningPath = path.join(outputPath);
     const outputPackagePath = path.join(outputSigningPath, `${packageName}${PACKAGE_EXTENSION}`);
@@ -140,11 +143,11 @@ export async function executeDeviceRekey(signingPath: string, deviceProperties?:
 
     // Go to Home
     await pressHomeButton(finalDeviceProperties.host);
-    await sleep();
+    await waitForDeviceToBeReady();
 
     // Clear current installed channel [AR]
     await deleteInstalledChannel({ ...finalDeviceProperties });
-    await sleep();
+    await waitForDeviceToBeReady();
 
     // Start rekey [AR]
     await rekeyDevice({
@@ -153,7 +156,7 @@ export async function executeDeviceRekey(signingPath: string, deviceProperties?:
         rekeySignedPackage: path.resolve(signingProperties.packageFilePath),
         devId: signingProperties.credentials.dev_id
     });
-    await sleep();
+    await waitForDeviceToBeReady();
 }
 
 function parseSigningProperties(signingPropertiesPath: string) {
@@ -210,6 +213,9 @@ function cleanOutDirectory() {
     fs.rmSync(DEFAULT_OUTPUT_DIRECTORY, { recursive: true, force:true })
 }
 
-function sleep(milliseconds: number = 3000) {
-  return new Promise(resolve => setTimeout(resolve, milliseconds));
+// For now, we don't have a way to know when the device is ready for
+// other operations, but it seems that giving some interval between actions
+// improve the succcess rate of the implemented operations [AR]
+function waitForDeviceToBeReady(milliseconds: number = DEFAULT_WAIT_FOR_DEVICE_INTERVAL) {
+    sleep(milliseconds)
 }
