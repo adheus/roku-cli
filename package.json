@@ -1,6 +1,6 @@
 {
   "name": "roku-cli",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Roku CLI Build tools",
   "main": "dist/roku",
   "typings": "dist/roku",
@@ -22,7 +22,7 @@
     "chalk": "^4.1.0",
     "fast-xml-parser": "^3.18.0",
     "roku-deploy": "^3.3.0",
-    "telnet-client": "^1.4.6",
+    "telnet-client": "^1.4.9",
     "yargs": "^16.2.0"
   },
   "devDependencies": {

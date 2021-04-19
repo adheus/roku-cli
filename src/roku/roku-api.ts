@@ -15,9 +15,13 @@ const DEFAULT_OUTPUT_DIRECTORY = 'out'
 
 export async function deployProject(projectPath: string, deviceProperties?: DeviceProperties) {
     const finalDeviceProperties = getDeviceProperties(deviceProperties?.device, deviceProperties?.password, deviceProperties?.username)
-    
+
+    // Assert project path exists [AR]
+    assertPathExists(projectPath);
+
     // Go to Home
     await pressHomeButton(finalDeviceProperties.host);
+    await sleep();
 
     // Deploy project to device [AR]
     await deploy({
@@ -25,6 +29,8 @@ export async function deployProject(projectPath: string, deviceProperties?: Devi
         project: `${projectPath}/bsconfig.json`,
         rootDir: projectPath
     });
+    
+    await sleep();
 
     // Clear ./out directory [AR]
     cleanOutDirectory();
@@ -34,11 +40,16 @@ export async function deployProject(projectPath: string, deviceProperties?: Devi
 export async function signPackage(projectPath: string, signingPath: string, outputPath: string, packageName: string, deviceProperties?: DeviceProperties) {
     const finalDeviceProperties = getDeviceProperties(deviceProperties?.device, deviceProperties?.password, deviceProperties?.username)
     
+    // Assert project path exists [AR]
+    assertPathExists(projectPath);
+
     // Go to Home
     await pressHomeButton(finalDeviceProperties.host);
+    await sleep();
 
     // Clear current installed channel [AR]
     await deleteInstalledChannel({ ...finalDeviceProperties });
+    await sleep();
 
     // Rekey device to application signing properties [AR]
     const signingProperties = parseSigningProperties(signingPath);
@@ -49,6 +60,7 @@ export async function signPackage(projectPath: string, signingPath: string, outp
         rekeySignedPackage: signedPackagePath,
         devId: signingProperties.credentials.dev_id
     });
+    await sleep();
 
     // Generate new package [AR]
     const generatedPackagePath = await deployAndSignPackage({
@@ -58,6 +70,7 @@ export async function signPackage(projectPath: string, signingPath: string, outp
         signingPassword: signingProperties.credentials.password,
         devId: signingProperties.credentials.dev_id
     });
+    await sleep();
 
     // Create output path directory if it doesn't exist [AR]
     if (!fs.existsSync(outputPath)) {
@@ -82,13 +95,19 @@ export async function createSigningCredentials(packageName: string, outputPath: 
 
     // Go to Home
     await pressHomeButton(finalDeviceProperties.host);
+    await sleep();
 
     // Clear current installed channel [AR]
     await deleteInstalledChannel({ ...finalDeviceProperties });
+    await sleep();
 
     const signingProperties = await generateKey(finalDeviceProperties.host);
+    await sleep();
 
     const signingProjectPath = getResourceAt(SIGNING_PROJECT_PATH);
+
+    // Assert project path exists [AR]
+    assertPathExists(signingProjectPath);
 
     const packagePath = await deployAndSignPackage({
         ...finalDeviceProperties,
@@ -96,6 +115,7 @@ export async function createSigningCredentials(packageName: string, outputPath: 
         signingPassword: signingProperties.password,
         devId: signingProperties.dev_id
     });
+    await sleep();
 
     const outputSigningPath = path.join(outputPath);
     const outputPackagePath = path.join(outputSigningPath, `${packageName}${PACKAGE_EXTENSION}`);
@@ -120,9 +140,11 @@ export async function executeDeviceRekey(signingPath: string, deviceProperties?:
 
     // Go to Home
     await pressHomeButton(finalDeviceProperties.host);
-    
+    await sleep();
+
     // Clear current installed channel [AR]
     await deleteInstalledChannel({ ...finalDeviceProperties });
+    await sleep();
 
     // Start rekey [AR]
     await rekeyDevice({
@@ -131,6 +153,7 @@ export async function executeDeviceRekey(signingPath: string, deviceProperties?:
         rekeySignedPackage: path.resolve(signingProperties.packageFilePath),
         devId: signingProperties.credentials.dev_id
     });
+    await sleep();
 }
 
 function parseSigningProperties(signingPropertiesPath: string) {
@@ -177,6 +200,16 @@ function getDeviceProperties(device: string | undefined = undefined, password: s
     }
 }
 
+function assertPathExists(projectPath: string | undefined) {
+    if (!projectPath || !fs.existsSync(projectPath)) {
+        throw Error(`Path does not exist: ${projectPath}`)
+    }
+}
+
 function cleanOutDirectory() {
     fs.rmSync(DEFAULT_OUTPUT_DIRECTORY, { recursive: true, force:true })
+}
+
+function sleep(milliseconds: number = 3000) {
+  return new Promise(resolve => setTimeout(resolve, milliseconds));
 }

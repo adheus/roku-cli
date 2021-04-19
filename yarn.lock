@@ -4284,10 +4284,10 @@ tar-stream@^2.1.0:
     inherits "^2.0.3"
     readable-stream "^3.1.1"
 
-telnet-client@^1.4.6:
-  version "1.4.6"
-  resolved "https://registry.yarnpkg.com/telnet-client/-/telnet-client-1.4.6.tgz"
-  integrity sha512-ukejw2Fv02oIRJ18jJw3m7TpEglbtBkrCM7Ci75H9zl7MZIKpaV+1L/TKC3Wy9KDk4tfidIJllv4jhGBBjTZBA==
+telnet-client@^1.4.9:
+  version "1.4.9"
+  resolved "https://registry.yarnpkg.com/telnet-client/-/telnet-client-1.4.9.tgz#2911f8ca3cc823475ed1257ceb3314614c4c4489"
+  integrity sha512-ryF0E3mg6am1EnCQZj7OoBnueS3l8IT7lDyDyFR8FdIshRRKBpbKjX7AUnt1ImVd43WKl/AxYE5MTkX3LjhGaQ==
   dependencies:
     bluebird "^3.5.4"
 
