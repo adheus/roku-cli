@@ -21,7 +21,6 @@
   "dependencies": {
     "chalk": "^4.1.0",
     "fast-xml-parser": "^3.18.0",
-    "node-ssdp": "^4.0.1",
     "roku-deploy": "^3.3.0",
     "telnet-client": "^1.4.6",
     "yargs": "^16.2.0"
