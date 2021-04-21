@@ -1,7 +1,7 @@
 import Telnet from 'telnet-client';
 import { sleep } from '../utils/async-utils';
 
-const DEFAULT_INTERVAL_BETWEEN_OPERATIONS = 3000;
+const DEFAULT_INTERVAL_BETWEEN_OPERATIONS = 5000;
 
 export async function generateKey(deviceAddress: string) {
     let connection = new Telnet();

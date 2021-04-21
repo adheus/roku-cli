@@ -3903,7 +3903,7 @@ rimraf@^3.0.0:
 
 roku-deploy@^3.3.0:
   version "3.3.0"
-  resolved "https://registry.npmjs.org/roku-deploy/-/roku-deploy-3.3.0.tgz"
+  resolved "https://registry.yarnpkg.com/roku-deploy/-/roku-deploy-3.3.0.tgz#720fa3ae7e71e11f90fe7b41bf23a9bfe0558f5c"
   integrity sha512-85XAgFH7AZylxIiECHbfydNEYeUUEEs/iq/zl3G3gqgM+x3fT/JnnkqrwgdFdLBj+aJVR3ZlyhuUWjDh1WxMbw==
   dependencies:
     archiver "^3.0.0"
