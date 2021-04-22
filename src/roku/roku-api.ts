@@ -52,7 +52,7 @@ export async function signPackage(projectPath: string, signingPath: string, outp
         signingPassword: signingProperties.credentials.password,
         devId: signingProperties.credentials.dev_id,
         outDir: outputPath,
-        outFile: `${packageName}${PACKAGE_EXTENSION}`,
+        outFile: packageName,
         stagingFolderPath: './.roku-cli-staging',
         failOnCompileError: true
     });
