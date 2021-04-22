@@ -56,11 +56,6 @@ export async function signPackage(projectPath: string, signingPath: string, outp
         stagingFolderPath: './.roku-cli-staging',
         failOnCompileError: true
     });
-
-    // Create output path directory if it doesn't exist [AR]
-    if (!fs.existsSync(outputPath)) {
-        fs.mkdirSync(outputPath, { recursive: true });
-    }
     
     return generatedPackagePath;
 }
