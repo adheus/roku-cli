@@ -22,7 +22,8 @@ export async function deployProject(projectPath: string, deviceProperties?: Devi
         ...finalDeviceProperties,
         project: `${projectPath}/bsconfig.json`,
         rootDir: projectPath,
-        retainStagingFolder: false
+        stagingFolderPath: './.roku-cli-staging',
+        failOnCompileError: true
     });
 }
 
@@ -41,7 +42,6 @@ export async function signPackage(projectPath: string, signingPath: string, outp
         signingPassword: signingProperties.credentials.password,
         rekeySignedPackage: signedPackagePath,
         devId: signingProperties.credentials.dev_id,
-        retainStagingFolder: false
     });
 
     // Generate new package [AR]
@@ -51,19 +51,18 @@ export async function signPackage(projectPath: string, signingPath: string, outp
         rootDir: projectPath,
         signingPassword: signingProperties.credentials.password,
         devId: signingProperties.credentials.dev_id,
-        retainStagingFolder: false
+        outDir: outputPath,
+        outFile: `${packageName}${PACKAGE_EXTENSION}`,
+        stagingFolderPath: './.roku-cli-staging',
+        failOnCompileError: true
     });
 
     // Create output path directory if it doesn't exist [AR]
     if (!fs.existsSync(outputPath)) {
         fs.mkdirSync(outputPath, { recursive: true });
     }
-
-    // Copy generated package to output path [AR]
-    const packageOutputPath = path.join(outputPath, `${packageName}${PACKAGE_EXTENSION}`);
-    fs.copyFileSync(generatedPackagePath, packageOutputPath);
-
-    return packageOutputPath;
+    
+    return generatedPackagePath;
 }
 
 
@@ -83,7 +82,6 @@ export async function createSigningCredentials(packageName: string, outputPath: 
         rootDir: signingProjectPath,
         signingPassword: signingProperties.password,
         devId: signingProperties.dev_id,
-        retainStagingFolder: false
     });
 
     const outputSigningPath = path.join(outputPath);
@@ -110,7 +108,6 @@ export async function executeDeviceRekey(signingPath: string, deviceProperties?:
         signingPassword: signingProperties.credentials.password,
         rekeySignedPackage: path.resolve(signingProperties.packageFilePath),
         devId: signingProperties.credentials.dev_id,
-        retainStagingFolder: false
     });
 }
 
