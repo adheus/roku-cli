@@ -72,21 +72,21 @@ export async function createSigningCredentials(packageName: string, outputPath: 
     // Assert project path exists [AR]
     assertPathExists(signingProjectPath);
 
-    const packagePath = await deployAndSignPackage({
+    await deployAndSignPackage({
         ...finalDeviceProperties,
         rootDir: signingProjectPath,
         signingPassword: signingProperties.password,
         devId: signingProperties.dev_id,
+        outDir: outputPath,
+        outFile: packageName,
     });
 
     const outputSigningPath = path.join(outputPath);
-    const outputPackagePath = path.join(outputSigningPath, `${packageName}${PACKAGE_EXTENSION}`);
     const outputCredentialsPath = path.join(outputSigningPath, CREDENTIALS_FILENAME);
 
     if (!fs.existsSync(outputSigningPath)) {
         fs.mkdirSync(outputSigningPath, { recursive: true });
     }
-    fs.copyFileSync(packagePath, outputPackagePath);
     fs.writeFileSync(outputCredentialsPath, JSON.stringify(signingProperties));
 
     return outputPath;
