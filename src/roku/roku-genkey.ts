@@ -1,4 +1,7 @@
 import Telnet from 'telnet-client';
+import { sleep } from '../utils/async-utils';
+
+const DEFAULT_INTERVAL_BETWEEN_OPERATIONS = 5000;
 
 export async function generateKey(deviceAddress: string) {
     let connection = new Telnet();
@@ -6,13 +9,15 @@ export async function generateKey(deviceAddress: string) {
         host: deviceAddress,
         port: 8080,
         shellPrompt: '>',
-        timeout: 5000,
-        execTimeout: 5000
+        timeout: 8000,
+        execTimeout: 8000
     }
 
     try {
         await connection.connect(params);
+        await waitForDeviceToBeReady()
         const response = await connection.exec('genkey');
+        await waitForDeviceToBeReady()
         await connection.end();
 
         const password = extractVariable("Password", response);
@@ -39,4 +44,11 @@ function extractVariable(variableName: string, response: string): string | undef
     }
 
     return undefined;
+}
+
+// For now, we don't have a way to know when the device is ready for
+// other operations, but it seems that giving some interval between actions
+// improve the succcess rate of the implemented operations [AR]
+function waitForDeviceToBeReady() {
+    sleep(DEFAULT_INTERVAL_BETWEEN_OPERATIONS);
 }

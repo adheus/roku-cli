@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import { pressHomeButton, rekeyDevice, deployAndSignPackage, deleteInstalledChannel, deploy } from 'roku-deploy';
+import { rekeyDevice, deployAndSignPackage, deploy } from 'roku-deploy';
 import { generateKey } from '../roku/roku-genkey';
 
 type DeviceProperties = { device?: string, password?: string, username?: string }
@@ -11,34 +11,28 @@ const PACKAGE_EXTENSION = '.pkg'
 const RESOURCE_FOLDER_DIRECTORY = 'resources'
 const SIGNING_PROJECT_PATH = 'signing-project'
 
-const DEFAULT_OUTPUT_DIRECTORY = 'out'
-
 export async function deployProject(projectPath: string, deviceProperties?: DeviceProperties) {
     const finalDeviceProperties = getDeviceProperties(deviceProperties?.device, deviceProperties?.password, deviceProperties?.username)
-    
-    // Go to Home
-    await pressHomeButton(finalDeviceProperties.host);
+
+    // Assert project path exists [AR]
+    assertPathExists(projectPath);
 
     // Deploy project to device [AR]
     await deploy({
         ...finalDeviceProperties,
         project: `${projectPath}/bsconfig.json`,
-        rootDir: projectPath
+        rootDir: projectPath,
+        stagingFolderPath: './.roku-cli-staging',
+        failOnCompileError: true
     });
-
-    // Clear ./out directory [AR]
-    cleanOutDirectory();
 }
 
 
 export async function signPackage(projectPath: string, signingPath: string, outputPath: string, packageName: string, deviceProperties?: DeviceProperties) {
     const finalDeviceProperties = getDeviceProperties(deviceProperties?.device, deviceProperties?.password, deviceProperties?.username)
     
-    // Go to Home
-    await pressHomeButton(finalDeviceProperties.host);
-
-    // Clear current installed channel [AR]
-    await deleteInstalledChannel({ ...finalDeviceProperties });
+    // Assert project path exists [AR]
+    assertPathExists(projectPath);
 
     // Rekey device to application signing properties [AR]
     const signingProperties = parseSigningProperties(signingPath);
@@ -47,7 +41,7 @@ export async function signPackage(projectPath: string, signingPath: string, outp
         ...finalDeviceProperties,
         signingPassword: signingProperties.credentials.password,
         rekeySignedPackage: signedPackagePath,
-        devId: signingProperties.credentials.dev_id
+        devId: signingProperties.credentials.dev_id,
     });
 
     // Generate new package [AR]
@@ -56,23 +50,14 @@ export async function signPackage(projectPath: string, signingPath: string, outp
         project: `${projectPath}/bsconfig.json`,
         rootDir: projectPath,
         signingPassword: signingProperties.credentials.password,
-        devId: signingProperties.credentials.dev_id
+        devId: signingProperties.credentials.dev_id,
+        outDir: outputPath,
+        outFile: packageName,
+        stagingFolderPath: './.roku-cli-staging',
+        failOnCompileError: true
     });
-
-    // Create output path directory if it doesn't exist [AR]
-    if (!fs.existsSync(outputPath)) {
-        fs.mkdirSync(outputPath, { recursive: true });
-    }
-
-    // Copy generated package to output path [AR]
-    const packageOutputPath = path.join(outputPath, `${packageName}${PACKAGE_EXTENSION}`);
-    fs.copyFileSync(generatedPackagePath, packageOutputPath);
-
-
-    // Clear ./out directory [AR]
-    cleanOutDirectory();
-
-    return packageOutputPath;
+    
+    return generatedPackagePath;
 }
 
 
@@ -80,35 +65,29 @@ export async function createSigningCredentials(packageName: string, outputPath: 
 
     const finalDeviceProperties = getDeviceProperties(deviceProperties?.device, deviceProperties?.password, deviceProperties?.username)
 
-    // Go to Home
-    await pressHomeButton(finalDeviceProperties.host);
-
-    // Clear current installed channel [AR]
-    await deleteInstalledChannel({ ...finalDeviceProperties });
-
     const signingProperties = await generateKey(finalDeviceProperties.host);
 
     const signingProjectPath = getResourceAt(SIGNING_PROJECT_PATH);
 
-    const packagePath = await deployAndSignPackage({
+    // Assert project path exists [AR]
+    assertPathExists(signingProjectPath);
+
+    await deployAndSignPackage({
         ...finalDeviceProperties,
         rootDir: signingProjectPath,
         signingPassword: signingProperties.password,
-        devId: signingProperties.dev_id
+        devId: signingProperties.dev_id,
+        outDir: outputPath,
+        outFile: packageName,
     });
 
     const outputSigningPath = path.join(outputPath);
-    const outputPackagePath = path.join(outputSigningPath, `${packageName}${PACKAGE_EXTENSION}`);
     const outputCredentialsPath = path.join(outputSigningPath, CREDENTIALS_FILENAME);
 
     if (!fs.existsSync(outputSigningPath)) {
         fs.mkdirSync(outputSigningPath, { recursive: true });
     }
-    fs.copyFileSync(packagePath, outputPackagePath);
     fs.writeFileSync(outputCredentialsPath, JSON.stringify(signingProperties));
-
-    // Clear ./out directory [AR]
-    cleanOutDirectory();
 
     return outputPath;
 }
@@ -118,18 +97,12 @@ export async function executeDeviceRekey(signingPath: string, deviceProperties?:
     const signingProperties = parseSigningProperties(signingPath);
     const finalDeviceProperties = getDeviceProperties(deviceProperties?.device, deviceProperties?.password, deviceProperties?.username)
 
-    // Go to Home
-    await pressHomeButton(finalDeviceProperties.host);
-    
-    // Clear current installed channel [AR]
-    await deleteInstalledChannel({ ...finalDeviceProperties });
-
     // Start rekey [AR]
     await rekeyDevice({
         ...finalDeviceProperties,
         signingPassword: signingProperties.credentials.password,
         rekeySignedPackage: path.resolve(signingProperties.packageFilePath),
-        devId: signingProperties.credentials.dev_id
+        devId: signingProperties.credentials.dev_id,
     });
 }
 
@@ -177,6 +150,8 @@ function getDeviceProperties(device: string | undefined = undefined, password: s
     }
 }
 
-function cleanOutDirectory() {
-    fs.rmSync(DEFAULT_OUTPUT_DIRECTORY, { recursive: true, force:true })
+function assertPathExists(projectPath: string | undefined) {
+    if (!projectPath || !fs.existsSync(projectPath)) {
+        throw Error(`Path does not exist: ${projectPath}`)
+    }
 }

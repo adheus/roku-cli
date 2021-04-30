@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--********** Copyright 2016 Roku Corp.  All Rights Reserved. **********-->
+
+<component name="MainScene" extends="BaseScene" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://devtools.web.roku.com/schema/RokuSceneGraph.xsd">
+    <interface>
+    </interface>
+    <!-- importing main handler -->
+    <script type="text/brightscript" uri="pkg:/components/MainScene.brs" />
+
+    <children>
+
+        <Group id="qaPanel" translation="[ 355, 300 ]">
+            <Rectangle color="#FF3333CC" width="540" height="80" />
+            <SimpleLabel id="qaPanelMessage" text="WARNING: SIGNING SAMPLE, NOT FOR DISTRIBUTION" translation="[ 10, 10 ]" fontUri="font:SmallestSystemFont" />
+            <SimpleLabel id="qaPanelDescription" text="This should only be visible while creating new credentials." translation="[ 10, 40 ]" fontUri="font:SmallestSystemFont" />
+        </Group>
+
+    </children>
+</component>

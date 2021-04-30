@@ -16,7 +16,7 @@ describe('deploy project tests', () => {
             await deployProject('path/doesnt/exist', testDeviceProperties)
             fail('deploy should have failed')
         } catch (error) {
-            expect(error.message).toContain('rootDir does not exist')
+            expect(error.message).toContain('Path does not exist')
         }
     });
 
