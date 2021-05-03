@@ -72,6 +72,13 @@ export async function createSigningCredentials(packageName: string, outputPath: 
     // Assert project path exists [AR]
     assertPathExists(signingProjectPath);
 
+    const outputSigningPath = path.join(outputPath);
+    const outputCredentialsPath = path.join(outputSigningPath, CREDENTIALS_FILENAME);
+
+    if (!fs.existsSync(outputSigningPath)) {
+        fs.mkdirSync(outputSigningPath, { recursive: true });
+    }
+
     await deployAndSignPackage({
         ...finalDeviceProperties,
         rootDir: signingProjectPath,
@@ -81,15 +88,9 @@ export async function createSigningCredentials(packageName: string, outputPath: 
         outFile: packageName,
     });
 
-    const outputSigningPath = path.join(outputPath);
-    const outputCredentialsPath = path.join(outputSigningPath, CREDENTIALS_FILENAME);
-
-    if (!fs.existsSync(outputSigningPath)) {
-        fs.mkdirSync(outputSigningPath, { recursive: true });
-    }
     fs.writeFileSync(outputCredentialsPath, JSON.stringify(signingProperties));
 
-    return outputPath;
+    return outputSigningPath;
 }
 
 export async function executeDeviceRekey(signingPath: string, deviceProperties?: DeviceProperties) {
