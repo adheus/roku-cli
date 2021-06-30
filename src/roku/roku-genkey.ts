@@ -15,9 +15,9 @@ export async function generateKey(deviceAddress: string) {
 
     try {
         await connection.connect(params);
-        await waitForDeviceToBeReady()
+        waitForDeviceToBeReady()
         const response = await connection.exec('genkey');
-        await waitForDeviceToBeReady()
+        waitForDeviceToBeReady()
         await connection.end();
 
         const password = extractVariable("Password", response);
