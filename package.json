@@ -11,6 +11,7 @@
     "roku": "./dist/commands/roku.js"
   },
   "scripts": {
+    "pre-build": "cd node_modules/roku-deploy && yarn install && yarn build",
     "build": "tsc",
     "test": "jest --runInBand --coverage --detectOpenHandles"
   },
@@ -21,7 +22,7 @@
   "dependencies": {
     "chalk": "^4.1.0",
     "fast-xml-parser": "^3.18.0",
-    "roku-deploy": "../roku-deploy",
+    "roku-deploy": "git+https://github.com/adheus/roku-deploy.git",
     "telnet-client": "^1.4.9",
     "yargs": "^16.2.0"
   },

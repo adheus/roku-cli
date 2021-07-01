@@ -3821,8 +3821,9 @@ rimraf@^3.0.0:
   dependencies:
     glob "^7.1.3"
 
-roku-deploy@../roku-deploy:
+"roku-deploy@git+https://github.com/adheus/roku-deploy.git":
   version "3.4.1"
+  resolved "git+https://github.com/adheus/roku-deploy.git#063b08044d669d2c89369db582e7cb0bd82d777a"
   dependencies:
     chalk "^2.4.2"
     dateformat "^3.0.3"

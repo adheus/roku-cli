@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import { rekeyDevice, deployAndSignPackage, deploy } from 'roku-deploy';
+import { rekeyDevice, deployAndSignPackage, deploy } from 'roku-deploy/dist';
 import { generateKey } from '../roku/roku-genkey';
 
 type DeviceProperties = { device?: string, password?: string, username?: string }
