@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import { rekeyDevice, deployAndSignPackage, deploy } from 'roku-deploy/dist';
+import * as rokuDeploy from 'roku-deploy';
 import { generateKey } from '../roku/roku-genkey';
 
 type DeviceProperties = { device?: string, password?: string, username?: string }
@@ -11,6 +11,7 @@ const PACKAGE_EXTENSION = '.pkg'
 const RESOURCE_FOLDER_DIRECTORY = 'resources'
 const SIGNING_PROJECT_PATH = 'signing-project'
 
+
 export async function deployProject(projectPath: string, deviceProperties?: DeviceProperties) {
     const finalDeviceProperties = getDeviceProperties(deviceProperties?.device, deviceProperties?.password, deviceProperties?.username)
 
@@ -18,7 +19,7 @@ export async function deployProject(projectPath: string, deviceProperties?: Devi
     assertPathExists(projectPath);
 
     // Deploy project to device [AR]
-    await deploy({
+    await rokuDeploy.deploy({
         ...finalDeviceProperties,
         project: `${projectPath}/bsconfig.json`,
         rootDir: projectPath,
@@ -37,7 +38,7 @@ export async function signPackage(projectPath: string, signingPath: string, outp
     // Rekey device to application signing properties [AR]
     const signingProperties = parseSigningProperties(signingPath);
     const signedPackagePath = path.resolve(signingProperties.packageFilePath);
-    await rekeyDevice({
+    await rokuDeploy.rekeyDevice({
         ...finalDeviceProperties,
         signingPassword: signingProperties.credentials.password,
         rekeySignedPackage: signedPackagePath,
@@ -45,7 +46,7 @@ export async function signPackage(projectPath: string, signingPath: string, outp
     });
 
     // Generate new package [AR]
-    const generatedPackagePath = await deployAndSignPackage({
+    const generatedPackagePath = await rokuDeploy.deployAndSignPackage({
         ...finalDeviceProperties,
         project: `${projectPath}/bsconfig.json`,
         rootDir: projectPath,
@@ -79,7 +80,7 @@ export async function createSigningCredentials(packageName: string, outputPath: 
         fs.mkdirSync(outputSigningPath, { recursive: true });
     }
 
-    await deployAndSignPackage({
+    await rokuDeploy.deployAndSignPackage({
         ...finalDeviceProperties,
         rootDir: signingProjectPath,
         signingPassword: signingProperties.password,
@@ -99,7 +100,7 @@ export async function executeDeviceRekey(signingPath: string, deviceProperties?:
     const finalDeviceProperties = getDeviceProperties(deviceProperties?.device, deviceProperties?.password, deviceProperties?.username)
 
     // Start rekey [AR]
-    await rekeyDevice({
+    await rokuDeploy.rekeyDevice({
         ...finalDeviceProperties,
         signingPassword: signingProperties.credentials.password,
         rekeySignedPackage: path.resolve(signingProperties.packageFilePath),

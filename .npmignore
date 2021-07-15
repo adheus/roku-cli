@@ -1,0 +1,9 @@
+.vscode
+.git
+coverage
+dist/*.spec.*
+src
+.gitignore
+.travis.yml
+tsconfig.json
+.eslintrc.js

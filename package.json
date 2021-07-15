@@ -1,6 +1,6 @@
 {
   "name": "roku-cli",
-  "version": "0.2.8",
+  "version": "0.3.11",
   "description": "Roku CLI Build tools",
   "main": "dist/roku",
   "typings": "dist/roku",
@@ -11,7 +11,6 @@
     "roku": "./dist/commands/roku.js"
   },
   "scripts": {
-    "pre-build": "cd node_modules/roku-deploy && yarn install && yarn build",
     "build": "tsc",
     "test": "jest --runInBand --coverage --detectOpenHandles"
   },
