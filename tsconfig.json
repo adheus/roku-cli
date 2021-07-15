@@ -1,12 +1,18 @@
 {
-    "compilerOptions": {
-        "target": "es6",
-        "esModuleInterop": true,
-        "module": "commonjs",
-        "strict": true,
-        "outDir": "dist",
-        "sourceMap": true
-    },
-    "include": ["src/**/*"],
-    "exclude": ["node_modules", "**/*.test.ts"]
+  "compileOnSave": true,
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "module": "commonjs",
+    "target": "es5",
+    "outDir": "dist",
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "alwaysStrict": true,
+    "preserveConstEnums": true,
+    "sourceMap": false,
+    "moduleResolution": "Node",
+    "lib": ["dom", "es2015", "es5", "es6"]
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["./node_modules"]
 }
