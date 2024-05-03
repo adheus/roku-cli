@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import * as rokuDeploy from 'roku-deploy';
+import * as rokuDeploy from '@adheus/roku-deploy';
 import { generateKey } from '../roku/roku-genkey';
 
 type DeviceProperties = { device?: string, password?: string, username?: string }
