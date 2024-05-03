@@ -1,6 +1,6 @@
 {
   "name": "roku-cli",
-  "version": "0.3.12",
+  "version": "0.3.13",
   "description": "Roku CLI Build tools",
   "main": "dist/roku",
   "typings": "dist/roku",
@@ -18,10 +18,13 @@
     "dist",
     "resources"
   ],
+  "workspaces": [
+    "libs/*"
+  ],
   "dependencies": {
     "chalk": "^4.1.0",
     "fast-xml-parser": "^3.18.0",
-    "roku-deploy": "github:adheus/roku-deploy#d5c30716995474b4bebf86aad1cae6c3ac7ca511",
+    "roku-deploy": "file:libs/roku-deploy",
     "telnet-client": "^1.4.9",
     "yargs": "^16.2.0"
   },
