@@ -1,6 +1,6 @@
 {
   "name": "roku-cli",
-  "version": "0.3.17",
+  "version": "0.3.18",
   "description": "Roku CLI Build tools",
   "main": "dist/roku",
   "typings": "dist/roku",
